@@ -24,13 +24,14 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
+	"github.com/regcostajr/go-web3"
 	"github.com/regcostajr/go-web3/eth/block"
 	"github.com/regcostajr/go-web3/providers"
 	"math/big"
 	"github.com/regcostajr/go-web3/dto"
 	"github.com/regcostajr/go-web3/complex/types"
 	"time"
+	"fmt"
 )
 
 func TestEthGetTransactionCount(t *testing.T) {
@@ -55,12 +56,13 @@ func TestEthGetTransactionCount(t *testing.T) {
 
 
 	// count should not change
-	if count != countTwo {
+	if count.Cmp(countTwo) != 0 {
 		t.Errorf("Count incorrect, changed between calls")
 		t.FailNow()
 	}
 	// send a transaction and the count should increase
 
+	t.Log("Starting Count:", count)
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinbase
 	transaction.To = coinbase
@@ -84,10 +86,11 @@ func TestEthGetTransactionCount(t *testing.T) {
 	    t.FailNow()
 	}
 
-	if newCount.ToInt64() != (countTwo.ToInt64() + 1) {
-		t.Errorf("Incorrect count retrieved")
+	if newCount.Int64() != (countTwo.Int64() + 1) {
+		t.Errorf(fmt.Sprintf("Incorrect count retrieved; [Expected %d | Got %d]", countTwo.Int64() + 1, newCount))
 		t.FailNow()
 	}
 
+	t.Log("Final Count: ", newCount)
 
 }

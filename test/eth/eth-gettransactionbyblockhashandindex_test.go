@@ -28,7 +28,6 @@ import (
 "github.com/regcostajr/go-web3/providers"
 "math/big"
     "time"
-    "github.com/regcostajr/go-web3/complex/types"
 )
 
 func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
@@ -69,16 +68,14 @@ func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
         t.FailNow()
     }
 
-    index := types.ComplexIntParameter(txFromHash.TransactionIndex.ToInt64())
-
-    tx, err := connection.Eth.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, index)
+    tx, err := connection.Eth.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, txFromHash.TransactionIndex)
 
     if err != nil {
        t.Error(err)
        t.FailNow()
     }
 
-    if tx.From != coinbase || tx.To != coinbase || tx.Value.ToInt64() != txVal.Int64() || tx.Hash != txID {
+    if tx.From != coinbase || tx.To != coinbase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
        t.Errorf("Incorrect transaction from hash and index")
        t.FailNow()
     }
@@ -86,17 +83,16 @@ func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
 
     // test removing the 0x
 
-    tx, err = connection.Eth.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash[2:], index)
+    tx, err = connection.Eth.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash[2:], txFromHash.TransactionIndex)
 
     if err != nil {
         t.Error(err)
         t.FailNow()
     }
 
-    if tx.From != coinbase || tx.To != coinbase || tx.Value.ToInt64() != txVal.Int64() || tx.Hash != txID {
+    if tx.From != coinbase || tx.To != coinbase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
         t.Errorf("Incorrect transaction from hash and index")
         t.FailNow()
     }
-
 
 }
